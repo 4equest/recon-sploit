@@ -17,7 +17,7 @@ optional arguments:
 
 ## Example
 
-### Recon example.com
+### recon example.com
 ```
 python3 recon-sploit.py -d example.com 
 ```
