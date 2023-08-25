@@ -21,6 +21,7 @@ Recon example.com
 python3 recon-sploit.py -d example.com 
 ```
 
+
 recon example.com subdomains
 ```
 assetfinder example.com | sort | uniq > domains.txt  
