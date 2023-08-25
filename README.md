@@ -16,13 +16,13 @@ optional arguments:
 ```
 
 ## Example
-Recon example.com
+
+### Recon example.com
 ```
 python3 recon-sploit.py -d example.com 
 ```
 
-
-recon example.com subdomains
+### recon example.com subdomains
 ```
 assetfinder example.com | sort | uniq > domains.txt  
 ```
