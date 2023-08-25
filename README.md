@@ -15,3 +15,21 @@ optional arguments:
                         specify single domain or IP
 ```
 
+## Example
+Recon example.com
+```
+python3 recon-sploit.py -d example.com 
+```
+
+recon example.com subdomains
+```
+assetfinder example.com | sort | uniq > domains.txt  
+```
+and
+```
+python3 recon-sploit.py -t domains.txt
+``` 
+
+
+
+
