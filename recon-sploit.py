@@ -4,9 +4,10 @@ import re
 import subprocess
 import csv
 import json
-import cve_searchsploit as CS
 from colorama import Fore, Back, Style
 import shutil
+from module.vulners import cpe_vulnerabilities
+import cve_searchsploit as CS
 
 pdir = os.path.dirname(os.path.abspath(CS.__file__))
 cve_map = {}
@@ -54,7 +55,9 @@ def run_smap_command(args):
 def extract_cve_and_domains():
     cve_pattern = re.compile(r'CVE-\d{4}-\d+')
     domain_pattern = re.compile(r'^\+ \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} \((.+)\)', re.MULTILINE)
+    cpe_pattern = re.compile(r'cpe:/.+')
     cve_to_domains = {}
+    cpe_to_domains = {}
     with open('smap_output', 'r') as f:
         content = f.read()
         domain_matches = domain_pattern.findall(content)
@@ -71,7 +74,15 @@ def extract_cve_and_domains():
                     cve_to_domains[cve] = set()
                 for d in domains:
                     cve_to_domains[cve].add(d)
-    return cve_to_domains
+            cpe_matches = cpe_pattern.findall(section)
+            for cpe_line in cpe_matches:
+                for cpe in cpe_line.split():
+                    if len(cpe.split(':')) > 4:
+                        if cpe not in cpe_to_domains:
+                            cpe_to_domains[cpe] = set()
+                        for d in domains:
+                            cpe_to_domains[cpe].add(d)
+    return cve_to_domains, cpe_to_domains
 
 def search_cve_aux(cve):
     results = []
@@ -112,6 +123,33 @@ def display_cve_information(cve_to_domains):
     if not found:
         print('No Exploits found')
 
+def display_cpe_information(cpe_to_domains):
+    term_size = shutil.get_terminal_size()
+    term_width = term_size.columns
+    found = False
+    for cpe, domains in sorted(cpe_to_domains.items()):
+        results = cpe_vulnerabilities(cpe)
+        if results != []:
+            print(f'+{"-" * int(term_width / 2)}')
+            print(f'| CPE: {Fore.GREEN + Style.BRIGHT}{cpe}{Style.RESET_ALL}')
+            print(f'| Domains: {", ".join(sorted(domains))}')
+            for result in results:
+                id, title, published, type, cvss_score, source_href = result
+                if id:
+                    print(f'+{"-" * int(term_width / 2)}')
+                    print(f'| Title: {Fore.GREEN + Style.BRIGHT}{title}{Style.RESET_ALL}')
+                    print(f'| URL: {source_href}')
+                    print(f'| Date: {published}')
+                    print(f'| id: {id}')
+                    print(f'| cvss_score: {cvss_score}')
+                    print(f'| Type: {type}')
+                    found = True
+            print(f'+{"-" * int(term_width / 2)}\n')
+                    
+    if not found:
+        print('No Exploits found')
+        
+        
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run recon-sploit.py with arguments')
     group = parser.add_mutually_exclusive_group(required=True)
@@ -129,6 +167,8 @@ if __name__ == '__main__':
     
     print("Gathering information...\n")
     run_smap_command(args)
-    cve_to_domains = extract_cve_and_domains()
+    cve_to_domains, cpe_to_domains = extract_cve_and_domains()
+    print(cpe_to_domains)
     display_cve_information(cve_to_domains)
+    display_cpe_information(cpe_to_domains)
 
