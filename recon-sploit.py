@@ -168,7 +168,5 @@ if __name__ == '__main__':
     print("Gathering information...\n")
     run_smap_command(args)
     cve_to_domains, cpe_to_domains = extract_cve_and_domains()
-    print(cpe_to_domains)
     display_cve_information(cve_to_domains)
     display_cpe_information(cpe_to_domains)
-
