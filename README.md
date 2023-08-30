@@ -31,3 +31,8 @@ and
 python3 recon-sploit.py -t domains.txt
 ``` 
 ![carbon](https://github.com/4equest/recon-sploit/assets/107108812/40e0306f-e5f4-4725-877e-a7a2684656ff)
+
+# Features
+* Get version information and vulnerability list from Shodan
+* Search for exploit in Exploit-DB
+* Search for exploit in Vulners
