@@ -11,15 +11,14 @@ def cpe_vulnerabilities(cpe_string):
     if len(cpe_split) <= 4:
         raise ValueError("Malformed CPE string. Please, refer to the https://cpe.mitre.org/specification/.")
     if cpe_split[1] == '2.3':
-        version = cpe_split[5]
-        cpe_split[5] = ""
+        version_idx = 5
     elif cpe_split[1] in '/a/o/h':
-        version = cpe_split[4]
-        cpe_split[4] = ""
+        version_idx = 4
     else:
         raise ValueError("Malformed CPE string. Please, refer to the https://cpe.mitre.org/specification/.")
-    
-    cpe_string=":".join(cpe_split[0:4])
+    cpe_split[version_idx] = ""
+    cpe_string = ":".join(cpe_split[0:4])
+    version = cpe_split[version_idx]
     version = version.split("/")[0]
     
     data = vulners_post_request({"software":cpe_string, 'version':version, 'type':'cpe'})
@@ -27,6 +26,7 @@ def cpe_vulnerabilities(cpe_string):
     if data['result'] == "OK":
         for item in data['data']['search']:
             source = item['_source']
-            if (('sourceHref' in source) and source['sourceHref'] != ""):
+            if source.get('sourceHref'):
                 results.append([source['id'], source['title'], source['published'], source['type'], source['cvss']['score'], source['sourceHref']])
+    
     return results
