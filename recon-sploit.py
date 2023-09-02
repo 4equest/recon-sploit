@@ -6,15 +6,13 @@ import csv
 import json
 from colorama import Fore, Back, Style
 import shutil
+from dotenv import load_dotenv
 from module.vulners import cpe_vulnerabilities
 import cve_searchsploit as CS
-import configparser
 from collections import defaultdict
 
 pdir = os.path.dirname(os.path.abspath(CS.__file__))
 cve_map = {}
-config = configparser.ConfigParser()
-config['DEFAULT'] = {'A': '', 'B': ''}
 
 with open(pdir + "/exploitdb_mapping_cve.json") as data_file:
     cve_map = json.load(data_file)
@@ -161,14 +159,6 @@ def display_cpe_information(cpe_to_domains):
         
         
 if __name__ == '__main__':
-    if not os.path.exists('config.cfg'):
-        with open('config.cfg', 'w') as configfile:
-            config.write(configfile)
-    else:
-        config.read('config.cfg')
-        A = config.get('DEFAULT', 'A')
-        B = config.get('DEFAULT', 'B')
-
     parser = argparse.ArgumentParser(description='Run recon-sploit.py with arguments')
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-l', '--domain-list', type=str, help='specify target domain list file')
@@ -178,6 +168,13 @@ if __name__ == '__main__':
     parser.add_argument('--show-duplicate', type=bool, default=False, help='show duplicate exploits')
     args = parser.parse_args()
 
+    load_dotenv()
+    censys_api_id = None
+    censys_api_secret = None
+    if 'CENSYS_API_ID' in os.environ and 'CENSYS_API_SECRET' in os.environ:
+        censys_api_id = os.environ['CENSYS_API_ID']
+        censys_api_secret = os.environ['CENSYS_API_SECRET']
+        
     print("Updating exploitdb. This may take a while for the first time")
     CS.update_db()
     if not check_requirements():
