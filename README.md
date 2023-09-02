@@ -3,16 +3,20 @@ Tool to list vulnerabilities that may be exploitable without access to the targe
 
 # Usage
 ```
-usage: recon-sploit.py [-h] (-t TARGETS | -d DOMAIN)
+usage: recon-sploit.py [-h] (-l DOMAIN_LIST | -d DOMAIN | --cpe CPE | --cve CVE) [--show-duplicate SHOW_DUPLICATE]
 
 Run recon-sploit.py with arguments
 
 optional arguments:
   -h, --help            show this help message and exit
-  -t TARGETS, --targets TARGETS
-                        specify target list file
+  -l DOMAIN_LIST, --domain-list DOMAIN_LIST
+                        specify target domain list file
   -d DOMAIN, --domain DOMAIN
                         specify single domain or IP
+  --cpe CPE             specify single CPE
+  --cve CVE             specify single CVE
+  --show-duplicate SHOW_DUPLICATE
+                        show duplicate exploits
 ```
 
 ## Example

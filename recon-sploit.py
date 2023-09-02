@@ -171,9 +171,11 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run recon-sploit.py with arguments')
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-t', '--targets', type=str, help='specify target list file')
+    group.add_argument('-l', '--domain-list', type=str, help='specify target domain list file')
     group.add_argument('-d', '--domain', type=str, help='specify single domain or IP')
-    group.add_argument('-c', '--cpe', type=str, help='specify single CPE')
+    group.add_argument('--cpe', type=str, help='specify single CPE')
+    group.add_argument('--cve', type=str, help='specify single CVE')
+    parser.add_argument('--show-duplicate', type=bool, default=False, help='show duplicate exploits')
     args = parser.parse_args()
 
     print("Updating exploitdb. This may take a while for the first time")
