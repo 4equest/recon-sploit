@@ -1,7 +1,15 @@
 # recon-sploit
 Tool to list vulnerabilities that may be exploitable without access to the target (with shodan)
 
+![carbon](https://github.com/4equest/recon-sploit/assets/107108812/40e0306f-e5f4-4725-877e-a7a2684656ff)
+
+# Features
+* Get version information and vulnerability list from Shodan
+* Search for exploit in Exploit-DB
+* Search for exploit in Vulners
+* 
 # Usage
+If you want to use censys, rename .env.sample to .env and fill in your credentials. 
 ```
 usage: recon-sploit.py [-h] (-l DOMAIN_LIST | -d DOMAIN | --cpe CPE | --cve CVE) [--show-duplicate SHOW_DUPLICATE]
 
@@ -34,9 +42,3 @@ and
 ```
 python3 recon-sploit.py -t domains.txt
 ``` 
-![carbon](https://github.com/4equest/recon-sploit/assets/107108812/40e0306f-e5f4-4725-877e-a7a2684656ff)
-
-# Features
-* Get version information and vulnerability list from Shodan
-* Search for exploit in Exploit-DB
-* Search for exploit in Vulners
