@@ -9,14 +9,8 @@ import shutil
 from dotenv import load_dotenv
 from module.vulners import cpe_vulnerabilities
 from module.shodan import run_smap_command
-import cve_searchsploit as CS
+from module.exploitdb import search_cve_aux, update_db, pdir
 from collections import defaultdict
-
-pdir = os.path.dirname(os.path.abspath(CS.__file__))
-cve_map = {}
-
-with open(pdir + "/exploitdb_mapping_cve.json") as data_file:
-    cve_map = json.load(data_file)
     
 def check_requirements():
     try:
@@ -75,20 +69,6 @@ def extract_cve_and_domains():
                         cpe_to_domains[cpe] |= domains
 
     return dict(cve_to_domains), dict(cpe_to_domains)
-
-
-def search_cve_aux(cve):
-    results = []
-    with open(pdir + "/exploitdb/files_exploits.csv") as files:
-        reader = csv.reader(files)
-        next(reader)
-        if cve in cve_map:
-            for row in reader:
-                edb, file, description, date, author, type, platform, port, date_added, date_updated, verified, codes, tags, aliases, screenshot_url, application_url, source_url = tuple(row)
-                if edb in cve_map[cve]:
-                    results.append([edb, file, date, author, platform, type, port])
-
-    return results
 
 def display_cve_information(cve_to_domains):
     term_size = shutil.get_terminal_size()
@@ -158,7 +138,7 @@ if __name__ == '__main__':
     group.add_argument('--cve', type=str, help='specify single CVE')
     parser.add_argument('--show-duplicate', type=bool, default=False, help='show duplicate exploits')
     args = parser.parse_args()
-
+    
     load_dotenv()
     censys_api_id = None
     censys_api_secret = None
@@ -166,8 +146,8 @@ if __name__ == '__main__':
         censys_api_id = os.environ['CENSYS_API_ID']
         censys_api_secret = os.environ['CENSYS_API_SECRET']
         
-    print("Updating exploitdb. This may take a while for the first time")
-    CS.update_db()
+    update_db()
+        
     if not check_requirements():
         user_input = input('Do you want to install smap? (y/n): ')
         if user_input.lower() == 'y':
