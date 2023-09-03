@@ -40,5 +40,5 @@ assetfinder example.com | sort | uniq > domains.txt
 ```
 and
 ```
-python3 recon-sploit.py -t domains.txt
+python3 recon-sploit.py -l domains.txt
 ``` 
