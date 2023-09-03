@@ -8,6 +8,7 @@ from colorama import Fore, Back, Style
 import shutil
 from dotenv import load_dotenv
 from module.vulners import cpe_vulnerabilities
+from module.shodan import run_smap_command
 import cve_searchsploit as CS
 from collections import defaultdict
 
@@ -44,16 +45,6 @@ def check_smap_command():
         print('Error running smap command:', e.output.decode('utf-8').strip())
         exit(1)
 
-def run_smap_command(args):
-
-    if os.path.exists('smap_output'):
-        os.remove('smap_output')
-        
-    if args.targets:
-        os.system(f'smap -iL {args.targets} -oS smap_output')
-    elif args.domain:
-        os.system(f'smap {args.domain} -oS smap_output')
-        
 def extract_cve_and_domains():
     cve_pattern = re.compile(r'CVE-\d{4}-\d+')
     domain_pattern = re.compile(r'^\+ \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} \((.+)\)', re.MULTILINE)
