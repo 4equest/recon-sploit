@@ -70,60 +70,36 @@ def extract_cve_and_domains():
 
     return dict(cve_to_domains), dict(cpe_to_domains)
 
-def display_cve_information(cve_to_domains):
+def display_information(id_type, id_to_domains, search_func):
     term_size = shutil.get_terminal_size()
     term_width = term_size.columns
     found = False
-    for cve, domains in sorted(cve_to_domains.items()):
-        results = search_cve_aux(cve)
+    for id, domains in sorted(id_to_domains.items()):
+        results = search_func(id)
         if not results:
             continue
         line_separator = f'+{"-" * int(term_width / 2)}'
         print(line_separator)
-        print(f'| CVE ID: {Fore.GREEN + Style.BRIGHT}{cve}{Style.RESET_ALL}')
+        print(f'| {id_type}: {Fore.GREEN + Style.BRIGHT}{id}{Style.RESET_ALL}')
         print(f'| Domains: {", ".join(sorted(domains))}')
         for result in results:
-            if result['Exploit DB Id']:
-                print(f'+{"-" * int(term_width / 2)}')
+            if result.get('Exploit DB Id') or result.get('id'):
+                print(line_separator)
                 for key, value in result.items():
                     print(f'| {key}: {Fore.GREEN + Style.BRIGHT}{value}{Style.RESET_ALL}')
                 found = True
         print(line_separator)
         print()
-                    
+        
     if not found:
-        print('No Exploits found in Exploit-DB')
+        print(f'No Exploits found ({id_type})')
+
+def display_cve_information(cve_to_domains):
+    display_information('CVE', cve_to_domains, search_cve_aux)
 
 def display_cpe_information(cpe_to_domains):
-    term_size = shutil.get_terminal_size()
-    term_width = term_size.columns
-    found = False
-    for cpe, domains in sorted(cpe_to_domains.items()):
-        results = cpe_vulnerabilities(cpe)
-        if not results:
-            continue
-        line_separator = f'+{"-" * int(term_width / 2)}'
-        print(line_separator)
-        print(f'| CPE: {Fore.GREEN + Style.BRIGHT}{cpe}{Style.RESET_ALL}')
-        print(f'| Domains: {", ".join(sorted(domains))}')
-        for result in results:
-            id, title, published, type, cvss_score, source_href = result
-            if id:
-                print(f'+{"-" * int(term_width / 2)}')
-                print(f'| Title: {Fore.GREEN + Style.BRIGHT}{title}{Style.RESET_ALL}')
-                print(f'| URL: {source_href}')
-                print(f'| Date: {published}')
-                print(f'| id: {id}')
-                print(f'| cvss_score: {cvss_score}')
-                print(f'| Type: {type}')
-                found = True
-        print(line_separator)
-        print()
-                    
-    if not found:
-        print('No Exploits found in Vulners')
-        
-        
+    display_information('CPE', cpe_to_domains, cpe_vulnerabilities)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run recon-sploit.py with arguments')
     group = parser.add_mutually_exclusive_group(required=True)

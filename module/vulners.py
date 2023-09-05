@@ -27,6 +27,11 @@ def cpe_vulnerabilities(cpe_string):
         for item in data['data']['search']:
             source = item['_source']
             if source.get('sourceHref'):
-                results.append([source['id'], source['title'], source['published'], source['type'], source['cvss']['score'], source['sourceHref']])
+                results.append({'Title': source['title'],
+                                'URL': source['sourceHref'],
+                                'Date': source['published'],
+                                'id': source['id'],
+                                'cvss_score': source['cvss']['score'],
+                                'Type': source['type']})
     
     return results
