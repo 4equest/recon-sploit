@@ -133,7 +133,7 @@ if __name__ == '__main__':
     group.add_argument('--cve', type=str, help='specify single CVE')
     parser.add_argument('--show-duplicate', type=bool, default=False, help='show duplicate exploits')
     args = parser.parse_args()
-    
+
     load_dotenv()
     censys_api_id = None
     censys_api_secret = None
