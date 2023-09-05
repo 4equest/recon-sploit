@@ -83,15 +83,10 @@ def display_cve_information(cve_to_domains):
         print(f'| CVE ID: {Fore.GREEN + Style.BRIGHT}{cve}{Style.RESET_ALL}')
         print(f'| Domains: {", ".join(sorted(domains))}')
         for result in results:
-            edb, file, date, author, platform, type, port = result
-            if edb:
+            if result['Exploit DB Id']:
                 print(f'+{"-" * int(term_width / 2)}')
-                print(f'| Exploit DB Id: {Fore.GREEN + Style.BRIGHT}{edb}{Style.RESET_ALL}')
-                print(f'| File: {pdir}/exploitdb/{file}')
-                print(f'| Date: {date}')
-                print(f'| Author: {author}')
-                print(f'| Platform: {platform}')
-                print(f'| Type: {type}')
+                for key, value in result.items():
+                    print(f'| {key}: {Fore.GREEN + Style.BRIGHT}{value}{Style.RESET_ALL}')
                 found = True
         print(line_separator)
         print()
