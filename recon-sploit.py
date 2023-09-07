@@ -118,6 +118,14 @@ if __name__ == '__main__':
         censys_api_secret = os.environ['CENSYS_API_SECRET']
         
     update_db()
+    
+    if args.cpe:
+        display_cpe_information({args.cpe: ["single_search"]})
+        exit()
+        
+    if args.cve:
+        display_cve_information({args.cve: ["single_search"]})
+        exit()
         
     if not check_requirements():
         user_input = input('Do you want to install smap? (y/n): ')
