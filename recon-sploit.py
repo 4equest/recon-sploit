@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from module.vulners import cpe_vulnerabilities
 from module.shodan import run_smap_command
 from module.exploitdb import search_cve_aux, update_db, pdir
-from module.censys_cpe import get_cpe_by_censys
 from collections import defaultdict
     
 def check_requirements():
@@ -102,7 +101,6 @@ def display_cpe_information(cpe_to_domains):
     display_information('CPE', cpe_to_domains, cpe_vulnerabilities)
 
 if __name__ == '__main__':
-    
     parser = argparse.ArgumentParser(description='Run recon-sploit.py with arguments')
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-l', '--domain-list', type=str, help='specify target domain list file')
@@ -118,11 +116,6 @@ if __name__ == '__main__':
     if 'CENSYS_API_ID' in os.environ and 'CENSYS_API_SECRET' in os.environ:
         censys_api_id = os.environ['CENSYS_API_ID']
         censys_api_secret = os.environ['CENSYS_API_SECRET']
-        
-    # example.comドメインのCPE情報を取得して表示します
-    cpe_list = get_cpe_by_censys("www.ritsumei.ac.jp", censys_api_id, censys_api_secret)
-    #print(cpe_list)
-    exit(0)
         
     update_db()
     
