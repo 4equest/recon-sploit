@@ -16,14 +16,11 @@ def get_cpe_by_ip(ip, CENSYS_API_ID, CENSYS_API_SECRET):
     cpe_list = []
 
     try:
-        results = h.search("ip:54.248.91.22")
+        results = h.search("ip:1.1.1.1")
 
         for result in results:
             print(json.dumps(result, indent=4))
-            
-        exit()
-        if "80.http.get.metadata.product" in ip_data:
-            cpe_list.extend(ip_data["80.http.get.metadata.product"])
+
     except Exception as e:
         print(e)
 
