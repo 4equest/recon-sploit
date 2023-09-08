@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from module.vulners import cpe_vulnerabilities
 from module.shodan import run_smap_command
 from module.exploitdb import search_cve_aux, update_db, pdir
+from module.censys_cpe import get_cpe_by_censys
 from collections import defaultdict
     
 def check_requirements():
@@ -70,6 +71,19 @@ def extract_cve_and_domains():
 
     return dict(cve_to_domains), dict(cpe_to_domains)
 
+def add_cpe_to_list(domains, cpe_to_domains, censys_api_id, censys_api_secret):
+    for domain in domains:
+        cpe_list = get_cpe_by_censys(domain, censys_api_id, censys_api_secret)
+        
+        if cpe_list:
+            for cpe in cpe_list:
+                if cpe not in cpe_to_domains:
+                    cpe_to_domains[cpe] = set()
+                cpe_to_domains[cpe].add(domain)
+            
+    return cpe_to_domains
+
+
 def display_information(id_type, id_to_domains, search_func):
     term_size = shutil.get_terminal_size()
     term_width = term_size.columns
@@ -116,7 +130,7 @@ if __name__ == '__main__':
     if 'CENSYS_API_ID' in os.environ and 'CENSYS_API_SECRET' in os.environ:
         censys_api_id = os.environ['CENSYS_API_ID']
         censys_api_secret = os.environ['CENSYS_API_SECRET']
-        
+    
     update_db()
     
     if args.cpe:
@@ -132,9 +146,20 @@ if __name__ == '__main__':
         if user_input.lower() == 'y':
             install_smap()
             check_smap_command()
+            
+    if args.domain:
+        domains = [args.domain]
+    elif args.domain_list:
+        with open(args.domain_list, 'r') as f:
+            domains = f.read().splitlines()
     
     print("Gathering information...\n")
     run_smap_command(args)
+    print(" Shodan complete")
     cve_to_domains, cpe_to_domains = extract_cve_and_domains()
+    print(cpe_to_domains)
+    cpe_to_domains = add_cpe_to_list(domains, cpe_to_domains, censys_api_id, censys_api_secret)
+    print(cpe_to_domains)
+    print(" Censys complete")
     display_cve_information(cve_to_domains)
     display_cpe_information(cpe_to_domains)

@@ -1,7 +1,6 @@
 from censys.search import CensysHosts
 import socket
 from ipaddress import ip_address
-import json
 
 def get_ip_by_host(address):
     try:
@@ -12,15 +11,14 @@ def get_ip_by_host(address):
 
 def get_cpe_by_ip(ip, CENSYS_API_ID, CENSYS_API_SECRET):
     h = CensysHosts(api_id=CENSYS_API_ID, api_secret=CENSYS_API_SECRET)
-
     cpe_list = []
-
     try:
-        results = h.search("ip:1.1.1.1")
-
-        for result in results:
-            print(json.dumps(result, indent=4))
-
+        results = h.view(ip)
+        for service in results["services"]:
+            if "software" in service:
+                for software in service["software"]:
+                    if "uniform_resource_identifier" in software:
+                        cpe_list.append(software["uniform_resource_identifier"])
     except Exception as e:
         print(e)
 

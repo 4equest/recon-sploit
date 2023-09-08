@@ -16,11 +16,12 @@ def cpe_vulnerabilities(cpe_string):
         version_idx = 4
     else:
         raise ValueError("Malformed CPE string. Please, refer to the https://cpe.mitre.org/specification/.")
-    cpe_split[version_idx] = ""
-    cpe_string = ":".join(cpe_split[0:4])
+    
     version = cpe_split[version_idx]
     version = version.split("/")[0]
-    
+    cpe_split[version_idx] = ""
+    cpe_string = ":".join(cpe_split[0:4])
+
     data = vulners_post_request({"software":cpe_string, 'version':version, 'type':'cpe'})
     results = []
     if data['result'] == "OK":
