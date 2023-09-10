@@ -1,17 +1,19 @@
-import argparse
 import os
 import re
 import subprocess
 import csv
 import json
-from colorama import Fore, Back, Style
 import shutil
+from colorama import Fore, Back, Style
+from collections import defaultdict
+from tqdm import tqdm
+import argparse
 from dotenv import load_dotenv
 from module.vulners import cpe_vulnerabilities
 from module.shodan import run_smap_command
 from module.exploitdb import search_cve_aux, update_db, pdir
 from module.censys_cpe import get_cpe_by_censys
-from collections import defaultdict
+
     
 def check_requirements():
     try:
@@ -72,7 +74,7 @@ def extract_cve_and_domains():
     return dict(cve_to_domains), dict(cpe_to_domains)
 
 def add_cpe_to_list(domains, cpe_to_domains, censys_api_id, censys_api_secret):
-    for domain in domains:
+    for domain in tqdm(domains, desc="Searching CPEs by Censys"):
         cpe_list = get_cpe_by_censys(domain, censys_api_id, censys_api_secret)
         
         if cpe_list:
@@ -155,9 +157,7 @@ if __name__ == '__main__':
     
     print("Gathering information...\n")
     run_smap_command(args)
-    print(" Shodan complete")
     cve_to_domains, cpe_to_domains = extract_cve_and_domains()
     cpe_to_domains = add_cpe_to_list(domains, cpe_to_domains, censys_api_id, censys_api_secret)
-    print(" Censys complete")
     display_cve_information(cve_to_domains)
     display_cpe_information(cpe_to_domains)
