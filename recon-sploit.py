@@ -74,9 +74,9 @@ def extract_cve_and_domains():
     return dict(cve_to_domains), dict(cpe_to_domains)
 
 def add_cpe_to_list(domains, cpe_to_domains, censys_api_id, censys_api_secret):
-    for domain in tqdm(domains, desc="Searching CPEs by Censys"):
-        cpe_list = get_cpe_by_censys(domain, censys_api_id, censys_api_secret)
-        
+    domain_to_cpes = get_cpe_by_censys(domains, censys_api_id, censys_api_secret)
+    
+    for domain, cpe_list in domain_to_cpes.items():
         if cpe_list:
             for cpe in cpe_list:
                 if cpe not in cpe_to_domains:
